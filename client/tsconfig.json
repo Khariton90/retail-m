@@ -1,4 +1,16 @@
 {
-  // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json"
+	"extends": "./.nuxt/tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": "./",
+		"paths": {
+			"~/*": ["*"],
+			"app/*": ["app/*"],
+			"pages/*": ["pages/*"],
+			"widgets/*": ["widgets/*"],
+			"features/*": ["features/*"],
+			"entities/*": ["entities/*"],
+			"shared/*": ["shared/*"],
+			"assets/*": ["app/assets/*"]
+		}
+	}
 }

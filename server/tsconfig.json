@@ -16,6 +16,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/shared-types": ["libs/shared-types/src"],
+      "@/shared-types/*": ["libs/shared-types/src/*"],
+      "@/core": ["libs/core/src"],
+      "@/core/*": ["libs/core/src/*"]
+    }
   }
 }

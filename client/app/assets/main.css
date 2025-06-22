@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+:root {
+	--color-yellow: #ffba4e;
+	--color-black: #131313;
+}
