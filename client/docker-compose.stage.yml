@@ -1,0 +1,6 @@
+services:
+  retail.m:
+    container_name: retail.m
+    image: ghcr.io/khariton90/retail-m:latest
+    ports:
+      - 80:80

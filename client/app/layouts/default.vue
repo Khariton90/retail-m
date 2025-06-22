@@ -27,7 +27,7 @@ color.preference = 'dark'
 <style scoped>
 .app {
 	width: 100%;
-	background: linear-gradient(135deg, #000, var(--color-black) 50%, #000);
+	background-color: var(--color-black);
 }
 
 .container {

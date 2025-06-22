@@ -22,7 +22,8 @@
     "db-migrate": "npx prisma migrate dev --schema ./prisma/schema.prisma --name initial --skip-generate --skip-seed",
     "db-reset": "npx prisma migrate reset --schema ./prisma/schema.prisma --force --skip-generate --skip-seed",
     "db-generate": "npx prisma generate --schema ./prisma/schema.prisma",
-    "db-seed": "ts-node prisma/seed.ts"
+    "db-seed": "ts-node prisma/seed.ts",
+    "buildImage": "docker build --no-cache --file ./Dockerfile --tag ghcr.io/khariton90/retail-server:latest ."
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.0",

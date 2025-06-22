@@ -10,11 +10,13 @@
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BITCOIN_LAST_YEAR_HISTORY_API = exports.BITCOIN_LAST_24_HOURS_HISTORY_API = exports.ENV_FILE_PATH = void 0;
+exports.BITCOIN_LAST_MONTH_HISTORY_API = exports.BITCOIN_LAST_HOUR_HISTORY_API = exports.BITCOIN_LAST_YEAR_HISTORY_API = exports.BITCOIN_LAST_24_HOURS_HISTORY_API = exports.ENV_FILE_PATH = void 0;
 exports.ENV_FILE_PATH = './.env';
 const API_PATH = 'https://min-api.cryptocompare.com/data/v2';
 exports.BITCOIN_LAST_24_HOURS_HISTORY_API = `${API_PATH}/histohour?fsym=BTC&tsym=USD&limit=24`;
 exports.BITCOIN_LAST_YEAR_HISTORY_API = `${API_PATH}/histoday?fsym=BTC&tsym=USD&limit=365`;
+exports.BITCOIN_LAST_HOUR_HISTORY_API = 'https://min-api.cryptocompare.com/data/v2/histohour?fsym=BTC&tsym=USD&limit=1';
+exports.BITCOIN_LAST_MONTH_HISTORY_API = `${API_PATH}/histoday?fsym=BTC&tsym=USD&limit=1`;
 
 
 /***/ }),
@@ -290,8 +292,13 @@ let BitcoinPriceRepository = class BitcoinPriceRepository {
             take: bitcoin_price_consts_1.DEFAULT_LIMIT,
         });
     }
-    async addHourPrice(price) {
+    async createLastHourPrice(price) {
         return await this.prisma.dayPrice.create({
+            data: { ...price.toObject() },
+        });
+    }
+    async createLastDayPrice(price) {
+        return await this.prisma.yearPrice.create({
             data: { ...price.toObject() },
         });
     }
@@ -341,7 +348,12 @@ let BitcoinPriceService = class BitcoinPriceService {
     async create(createBitcoinPriceDto) {
         try {
             const entity = new bitcoin_price_entity_1.BitcoinPriceEntity(createBitcoinPriceDto);
-            return await this.bitcoinPriceRepository.addHourPrice(entity);
+            const now = dayjs.unix(createBitcoinPriceDto.timestamp);
+            const hour = now.get('hour');
+            if (hour === bitcoin_price_consts_1.DEFAULT_LIMIT) {
+                await this.bitcoinPriceRepository.createLastDayPrice(entity);
+            }
+            return await this.bitcoinPriceRepository.createLastHourPrice(entity);
         }
         catch (err) {
             throw new common_1.BadRequestException(bitcoin_price_consts_1.BAD_REQUEST_MESSAGE, err.message);
@@ -477,37 +489,16 @@ exports["default"] = Joi.object({
 
 /***/ }),
 
-/***/ "./src/exchange-api/exchange-api.controller.ts":
-/*!*****************************************************!*\
-  !*** ./src/exchange-api/exchange-api.controller.ts ***!
-  \*****************************************************/
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ "./src/exchange-api/exchange-api.consts.ts":
+/*!*************************************************!*\
+  !*** ./src/exchange-api/exchange-api.consts.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports) => {
 
 
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ExchangeApiController = void 0;
-const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const exchange_api_service_1 = __webpack_require__(/*! ./exchange-api.service */ "./src/exchange-api/exchange-api.service.ts");
-let ExchangeApiController = class ExchangeApiController {
-    constructor(exchangeApiService) {
-        this.exchangeApiService = exchangeApiService;
-    }
-};
-exports.ExchangeApiController = ExchangeApiController;
-exports.ExchangeApiController = ExchangeApiController = __decorate([
-    (0, common_1.Controller)('exchange-api'),
-    __metadata("design:paramtypes", [typeof (_a = typeof exchange_api_service_1.ExchangeApiService !== "undefined" && exchange_api_service_1.ExchangeApiService) === "function" ? _a : Object])
-], ExchangeApiController);
+exports.FAILED_TO_FETCH_MESSAGE = void 0;
+exports.FAILED_TO_FETCH_MESSAGE = 'Ошибка при получении данных:';
 
 
 /***/ }),
@@ -529,16 +520,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExchangeApiModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const exchange_api_service_1 = __webpack_require__(/*! ./exchange-api.service */ "./src/exchange-api/exchange-api.service.ts");
-const exchange_api_controller_1 = __webpack_require__(/*! ./exchange-api.controller */ "./src/exchange-api/exchange-api.controller.ts");
 const axios_1 = __webpack_require__(/*! @nestjs/axios */ "@nestjs/axios");
-const bitcoin_price_module_1 = __webpack_require__(/*! src/bitcoin-price/bitcoin-price.module */ "./src/bitcoin-price/bitcoin-price.module.ts");
 let ExchangeApiModule = class ExchangeApiModule {
 };
 exports.ExchangeApiModule = ExchangeApiModule;
 exports.ExchangeApiModule = ExchangeApiModule = __decorate([
     (0, common_1.Module)({
-        imports: [axios_1.HttpModule, bitcoin_price_module_1.BitcoinPriceModule],
-        controllers: [exchange_api_controller_1.ExchangeApiController],
+        imports: [axios_1.HttpModule],
         providers: [exchange_api_service_1.ExchangeApiService],
         exports: [exchange_api_service_1.ExchangeApiService],
     })
@@ -563,23 +551,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ExchangeApiService = void 0;
 const axios_1 = __webpack_require__(/*! @nestjs/axios */ "@nestjs/axios");
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const rxjs_1 = __webpack_require__(/*! rxjs */ "rxjs");
-const bitcoin_price_service_1 = __webpack_require__(/*! src/bitcoin-price/bitcoin-price.service */ "./src/bitcoin-price/bitcoin-price.service.ts");
+const exchange_api_consts_1 = __webpack_require__(/*! ./exchange-api.consts */ "./src/exchange-api/exchange-api.consts.ts");
+const app_constant_1 = __webpack_require__(/*! src/app.constant */ "./src/app.constant.ts");
 let ExchangeApiService = class ExchangeApiService {
-    constructor(httpService, bitcoinPriceService) {
+    constructor(httpService) {
         this.httpService = httpService;
-        this.bitcoinPriceService = bitcoinPriceService;
     }
-    async getHistoryToday() {
-        return (0, rxjs_1.lastValueFrom)(this.httpService
-            .get('https://min-api.cryptocompare.com/data/v2/histohour?fsym=BTC&tsym=USD&limit=1')
-            .pipe((0, rxjs_1.map)((response) => response.data), (0, rxjs_1.catchError)((error) => {
-            console.error('Ошибка при получении данных:', error);
+    async getLastHour() {
+        return (0, rxjs_1.lastValueFrom)(this.httpService.get(app_constant_1.BITCOIN_LAST_HOUR_HISTORY_API).pipe((0, rxjs_1.map)((response) => response.data), (0, rxjs_1.catchError)((error) => {
+            console.error(exchange_api_consts_1.FAILED_TO_FETCH_MESSAGE, error);
             return null;
         })));
     }
@@ -587,7 +573,7 @@ let ExchangeApiService = class ExchangeApiService {
 exports.ExchangeApiService = ExchangeApiService;
 exports.ExchangeApiService = ExchangeApiService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof axios_1.HttpService !== "undefined" && axios_1.HttpService) === "function" ? _a : Object, typeof (_b = typeof bitcoin_price_service_1.BitcoinPriceService !== "undefined" && bitcoin_price_service_1.BitcoinPriceService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof axios_1.HttpService !== "undefined" && axios_1.HttpService) === "function" ? _a : Object])
 ], ExchangeApiService);
 
 
@@ -723,9 +709,9 @@ let ScheduleService = ScheduleService_1 = class ScheduleService {
         this.bitcoinPriceService = bitcoinPriceService;
         this.logger = new common_1.Logger(ScheduleService_1.name);
     }
-    async handleCron() {
+    async getEveryHour() {
         try {
-            const data = await this.exchangeService.getHistoryToday();
+            const data = await this.exchangeService.getLastHour();
             const price = data.Data.Data[1];
             if (!price)
                 return;
@@ -749,7 +735,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], ScheduleService.prototype, "handleCron", null);
+], ScheduleService.prototype, "getEveryHour", null);
 exports.ScheduleService = ScheduleService = ScheduleService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [typeof (_a = typeof exchange_api_service_1.ExchangeApiService !== "undefined" && exchange_api_service_1.ExchangeApiService) === "function" ? _a : Object, typeof (_b = typeof bitcoin_price_service_1.BitcoinPriceService !== "undefined" && bitcoin_price_service_1.BitcoinPriceService) === "function" ? _b : Object])

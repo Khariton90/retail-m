@@ -1,9 +1,9 @@
 export default defineNuxtConfig({
 	compatibilityDate: '2025-05-15',
 	runtimeConfig: {
-		api: process.env.API,
+		api: 'http://localhost:3001/api/bitcoin-price',
 	},
-	devtools: { enabled: true },
+	devtools: { enabled: false },
 	dir: {
 		pages: './app/routes',
 		layouts: './app/layouts',
@@ -21,9 +21,9 @@ export default defineNuxtConfig({
 		defaultTimezone: 'Europe/Moscow',
 	},
 	colorMode: {
-		preference: 'system', // Режим по умолчанию (можешь выбрать light/dark/system)
-		fallback: 'dark', // Цветовая схема, применяемая при отсутствии предпочтений браузера
-		classSuffix: '', // Пустой суффикс классов (цветовая схема добавляется прямо в тег html)
-		storageKey: 'color-mode', // Имя ключа в localStorage для запоминания выбранной схемы
+		preference: 'system',
+		fallback: 'dark',
+		classSuffix: '',
+		storageKey: 'color-mode',
 	},
 })

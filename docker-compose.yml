@@ -1,0 +1,38 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:16-alpine
+    env_file:
+      - '.env'
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - postgres
+
+  retail.server:
+    container_name: retail.server
+    image: ghcr.io/khariton90/retail-server:latest
+    env_file:
+      - .env
+    ports:
+      - 3001:3001
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - postgres
+
+  retail.m:
+    container_name: retail.m
+    image: ghcr.io/khariton90/retail-m:latest
+    env_file:
+      - .env
+    ports:
+      - 80:80
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge

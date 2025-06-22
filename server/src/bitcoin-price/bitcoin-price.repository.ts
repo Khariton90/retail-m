@@ -35,8 +35,14 @@ export class BitcoinPriceRepository {
     });
   }
 
-  async addHourPrice(price: BitcoinPriceEntity): Promise<BitcoinPrice> {
+  async createLastHourPrice(price: BitcoinPriceEntity): Promise<BitcoinPrice> {
     return await this.prisma.dayPrice.create({
+      data: { ...price.toObject() },
+    });
+  }
+
+  async createLastDayPrice(price: BitcoinPriceEntity): Promise<BitcoinPrice> {
+    return await this.prisma.yearPrice.create({
       data: { ...price.toObject() },
     });
   }

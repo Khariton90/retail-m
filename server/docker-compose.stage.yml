@@ -4,12 +4,6 @@ services:
     image: postgres:16-alpine
     env_file:
       - '.env'
-    healthcheck:
-      test: ['CMD', 'pg_isready -U admin -d test']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
     ports:
       - 5432:5432
     volumes:
@@ -17,15 +11,15 @@ services:
     networks:
       - postgres
 
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
+  retail.server:
+    container_name: retail.server
+    image: ghcr.io/khariton90/retail-server:latest
     env_file:
       - '.env'
     depends_on:
       - postgres
     ports:
-      - 5050:80
+      - 3001:3001
     networks:
       - postgres
 

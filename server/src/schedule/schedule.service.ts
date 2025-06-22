@@ -13,9 +13,9 @@ export class ScheduleService {
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
-  async handleCron() {
+  async getEveryHour() {
     try {
-      const data = await this.exchangeService.getHistoryToday();
+      const data = await this.exchangeService.getLastHour();
       const price = data.Data.Data[1];
 
       if (!price) return;

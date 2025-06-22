@@ -8,17 +8,32 @@ enum PeriodQuery {
 	Year = 'year',
 }
 
-const take = {
-	[PeriodQuery.Week]: 7,
-	[PeriodQuery.Month]: 31,
-	[PeriodQuery.Year]: 365,
+const WEEK_COUNT = 7
+const YEAR_COUNT = 365
+const HOUR_COUNT = 24
+
+function getPeriodDays(period: PeriodQuery) {
+	const now = dayjs()
+
+	switch (period) {
+		case 'week':
+			return WEEK_COUNT
+		case 'month':
+			return now.daysInMonth()
+		case 'year':
+			return YEAR_COUNT
+	}
 }
 
 export function getUnixTimestamp(query: PeriodQuery): Query {
 	const now = dayjs()
-	const start =
-		query === 'day' ? dayjs().add(24, 'hour').unix() : now.startOf(query).unix()
-	const limit = query === 'day' ? undefined : take[query]
 
+	if (query === 'day') {
+		const start = now.add(HOUR_COUNT, 'hour').unix()
+		return { start, end: now.unix() }
+	}
+
+	const start = now.subtract(1, query).unix()
+	const limit = getPeriodDays(query)
 	return { start, end: now.unix(), limit }
 }

@@ -3,7 +3,7 @@ import { BitcoinPriceRepository } from './bitcoin-price.repository';
 import { BitcoinPriceEntity } from './entities/bitcoin-price.entity';
 import { BitcoinPriceQuery } from './query/bitcoin-price.query';
 import { BitcoinPrice } from '@/shared-types';
-import { BAD_REQUEST_MESSAGE } from './bitcoin-price.consts';
+import { BAD_REQUEST_MESSAGE, DEFAULT_LIMIT } from './bitcoin-price.consts';
 import * as dayjs from 'dayjs';
 import 'dayjs/locale/ru';
 dayjs.locale('ru');
@@ -20,7 +20,15 @@ export class BitcoinPriceService {
   }): Promise<BitcoinPrice | null> {
     try {
       const entity = new BitcoinPriceEntity(createBitcoinPriceDto);
-      return await this.bitcoinPriceRepository.addHourPrice(entity);
+
+      const now = dayjs.unix(createBitcoinPriceDto.timestamp);
+      const hour = now.get('hour');
+
+      if (hour === DEFAULT_LIMIT) {
+        await this.bitcoinPriceRepository.createLastDayPrice(entity);
+      }
+
+      return await this.bitcoinPriceRepository.createLastHourPrice(entity);
     } catch (err) {
       throw new BadRequestException(BAD_REQUEST_MESSAGE, err.message);
     }
