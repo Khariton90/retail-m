@@ -1,6 +1,4 @@
 import { Global, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { BitcoinPriceModule } from './bitcoin-price/bitcoin-price.module';
 import { ExchangeApiModule } from './exchange-api/exchange-api.module';
 import { MainScheduleModule } from './schedule/schedule.module';
@@ -23,7 +21,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ExchangeApiModule,
     MainScheduleModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

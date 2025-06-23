@@ -20,7 +20,6 @@ export class BitcoinPriceService {
   }): Promise<BitcoinPrice | null> {
     try {
       const entity = new BitcoinPriceEntity(createBitcoinPriceDto);
-
       const now = dayjs.unix(createBitcoinPriceDto.timestamp);
       const hour = now.get('hour');
 
