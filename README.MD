@@ -3,7 +3,13 @@
 ## Retail-M — веб-приложение для анализа динамики стоимости криптовалюты Bitcoin. Проект состоит из двух основных частей: серверная сторона (server) и клиентская сторона (client).
 
 <p align="center">
-  <a href="./retail.png" target="blank"><img src="./retail.png" width="1000" alt="Image" /></a>
+  <a href="./day-500.webp" target="blank"><img src="./day-500.webp" width="400" alt="Image" /></a>
+  <a href="./week-500.webp" target="blank"><img src="./week-500.webp" width="400" alt="Image" /></a>
+</p>
+
+<p align="center">
+  <a href="./month-500.webp" target="blank"><img src="./month-500.webp" width="400" alt="Image" /></a>
+  <a href="./year-500.webp" target="blank"><img src="./year-500.webp" width="400" alt="Image" /></a>
 </p>
 
 ## 🛠️ Запуск проекта:
