@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
 	compatibilityDate: '2025-05-15',
 	runtimeConfig: {
-		api: 'http://localhost:3001/api/bitcoin-price',
+		api: process.env.API,
 	},
 	devtools: { enabled: false },
 	dir: {
